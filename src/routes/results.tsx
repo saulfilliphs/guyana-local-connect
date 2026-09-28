@@ -21,7 +21,7 @@ function series(seed: number) {
 }
 
 function Results() {
-  const [id, setId] = useState(BUSINESSES[0].id);
+  const [id, setId] = useState(BUSINESSES[0]!.id);
   const seed = BUSINESSES.findIndex((b) => b.id === id) + 1;
   const views = series(seed);
   const total = views.reduce((a, b) => a + b, 0);
