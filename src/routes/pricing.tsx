@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, CheckCircle2 } from "lucide-react";
+import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -15,14 +17,39 @@ export const Route = createFileRoute("/pricing")({
 });
 
 const plans = [
-  { name: "Starter", price: 5000, features: ["Business listing", "WhatsApp, call & map buttons", "1 offer post / week"] },
-  { name: "Growth", price: 12000, popular: true, features: ["Everything in Starter", "Daily story deal", "5 offer posts / week", "Results dashboard"] },
-  { name: "Premium", price: 25000, features: ["Everything in Growth", "Top of feed in your zone", "Unlimited posts", "Photo shoot included"] },
+  { name: "Starter", tier: "business" as const, price: 5000, features: ["Business listing", "WhatsApp, call & map buttons", "1 offer post / week"] },
+  { name: "Growth", tier: "featured" as const, price: 12000, popular: true, features: ["Everything in Starter", "Daily story deal", "5 offer posts / week", "Results dashboard"] },
+  { name: "Premium", tier: "campaign" as const, price: 25000, features: ["Everything in Growth", "Top of feed in your zone", "Unlimited posts", "Photo shoot included"] },
 ];
 
 function Pricing() {
-  const [plan, setPlan] = useState<string | null>(null);
+  const [plan, setPlan] = useState<(typeof plans)[number] | null>(null);
   const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!plan) return;
+    const f = new FormData(e.currentTarget);
+    const parsed = z.object({
+      business_name: z.string().trim().min(1).max(120),
+      contact_name: z.string().trim().min(1).max(120),
+      phone: z.string().trim().min(5).max(30),
+      email: z.string().trim().email().max(255).optional().or(z.literal("")),
+      type: z.string().max(50),
+      message: z.string().trim().max(1000),
+    }).safeParse(Object.fromEntries(f));
+    if (!parsed.success) { setErr("Please check the fields and try again."); return; }
+    const d = parsed.data;
+    setBusy(true); setErr(null);
+    const { error } = await supabase.from("plan_requests").insert({
+      plan: plan.tier, business_name: d.business_name, contact_name: d.contact_name, phone: d.phone,
+      email: d.email || null, message: [`Type: ${d.type}`, d.message].filter(Boolean).join("\n"),
+    });
+    setBusy(false);
+    if (error) setErr("Could not send your request. Please try again."); else setSent(true);
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 pb-16">
@@ -38,7 +65,7 @@ function Pricing() {
             <h2 className="text-xl font-bold">{p.name}</h2>
             <p className="mt-2"><span className="text-4xl font-extrabold">GYD {p.price.toLocaleString()}</span><span className="text-muted-foreground"> /month</span></p>
             <ul className="my-5 flex-1 space-y-2">{p.features.map((f) => <li key={f} className="flex gap-2 text-sm"><Check className="h-4 w-4 shrink-0 text-whatsapp" />{f}</li>)}</ul>
-            <button onClick={() => { setPlan(p.name); setSent(false); }}
+            <button onClick={() => { setPlan(p); setSent(false); setErr(null); }}
               className={`rounded-xl py-3 font-bold ${p.popular ? "bg-primary text-primary-foreground" : "border-2 border-primary text-primary"} hover:opacity-90`}>
               Request {p.name}
             </button>
@@ -53,19 +80,22 @@ function Pricing() {
               <div className="text-center">
                 <CheckCircle2 className="mx-auto h-12 w-12 text-whatsapp" />
                 <h3 className="mt-3 text-xl font-bold">Request received!</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Our team will contact you on WhatsApp within 24 hours to activate your {plan} plan.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Our team will contact you on WhatsApp within 24 hours to activate your {plan.name} plan.</p>
                 <button onClick={() => setPlan(null)} className="mt-5 w-full rounded-xl bg-primary py-3 font-bold text-primary-foreground">Done</button>
               </div>
             ) : (
-              <form onSubmit={(e) => { e.preventDefault(); setSent(true); }} className="space-y-3">
-                <h3 className="text-xl font-bold">Reserve the {plan} plan</h3>
-                {["Business name", "Your name", "WhatsApp number"].map((l) => (
-                  <input key={l} required placeholder={l} className="w-full rounded-xl border bg-background px-3 py-2.5 text-sm" />
-                ))}
-                <select className="w-full rounded-xl border bg-background px-3 py-2.5 text-sm">
+              <form onSubmit={submit} className="space-y-3">
+                <h3 className="text-xl font-bold">Reserve the {plan.name} plan</h3>
+                <input name="business_name" required maxLength={120} placeholder="Business name" className="w-full rounded-xl border bg-background px-3 py-2.5 text-sm" />
+                <input name="contact_name" required maxLength={120} placeholder="Your name" className="w-full rounded-xl border bg-background px-3 py-2.5 text-sm" />
+                <input name="phone" required maxLength={30} placeholder="WhatsApp number" className="w-full rounded-xl border bg-background px-3 py-2.5 text-sm" />
+                <input name="email" type="email" maxLength={255} placeholder="Email (optional)" className="w-full rounded-xl border bg-background px-3 py-2.5 text-sm" />
+                <select name="type" className="w-full rounded-xl border bg-background px-3 py-2.5 text-sm">
                   <option>Restaurant</option><option>Phone repair</option><option>Beauty salon</option><option>Market / grocery</option><option>Other</option>
                 </select>
-                <button className="w-full rounded-xl bg-whatsapp py-3 font-bold text-whatsapp-foreground">Send request</button>
+                <textarea name="message" maxLength={1000} rows={2} placeholder="Anything we should know? (optional)" className="w-full rounded-xl border bg-background px-3 py-2.5 text-sm" />
+                {err && <p className="text-sm text-destructive">{err}</p>}
+                <button disabled={busy} className="w-full rounded-xl bg-whatsapp py-3 font-bold text-whatsapp-foreground disabled:opacity-60">{busy ? "Sending…" : "Send request"}</button>
               </form>
             )}
           </div>
