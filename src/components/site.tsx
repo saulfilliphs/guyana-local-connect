@@ -1,21 +1,44 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MessageCircle, Phone, MapPin } from "lucide-react";
 import { openStatus, waLink, mapsLink, type Business } from "@/lib/data";
+import { supabase } from "@/integrations/supabase/client";
+
+function AuthLink({ cls }: { cls: string }) {
+  const [signedIn, setSignedIn] = useState(false);
+  const navigate = useNavigate();
+  const router = useRouter();
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      setSignedIn(!!session);
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") router.invalidate();
+    });
+    return () => data.subscription.unsubscribe();
+  }, [router]);
+  if (!signedIn) return <Link to="/login" className={cls}>Sign in</Link>;
+  return (
+    <>
+      <Link to="/admin" className={cls}>Admin</Link>
+      <button className={cls} onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/login", replace: true }); }}>Sign out</button>
+    </>
+  );
+}
 
 export function Header() {
   const cls = "px-3 py-1.5 rounded-full text-sm font-semibold text-primary-foreground/80 hover:text-primary-foreground";
   const active = { className: "bg-accent !text-accent-foreground" };
   return (
     <header className="sticky top-0 z-30 bg-primary text-primary-foreground shadow-md">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <Link to="/" className="font-display text-xl font-extrabold tracking-tight">
           Guyana<span className="text-accent"> Ad </span>Local
         </Link>
-        <nav className="flex gap-1">
+        <nav className="flex flex-wrap gap-1">
           <Link to="/" className={cls} activeProps={active} activeOptions={{ exact: true }}>Feed</Link>
           <Link to="/results" className={cls} activeProps={active}>Results</Link>
           <Link to="/pricing" className={cls} activeProps={active}>Plans</Link>
+          <AuthLink cls={cls} />
         </nav>
       </div>
     </header>
