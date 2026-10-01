@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MessageCircle, Phone, MapPin } from "lucide-react";
-import { openStatus, waLink, mapsLink, type Business } from "@/lib/data";
+import { openStatus, waLink, mapsLink, logClick, type Business } from "@/lib/data";
 import { supabase } from "@/integrations/supabase/client";
 
 function AuthLink({ cls }: { cls: string }) {
@@ -65,14 +65,14 @@ export function OpenBadge({ b }: { b: Business }) {
 export function CTAs({ b }: { b: Business }) {
   return (
     <div className="flex gap-2">
-      <a href={waLink(b)} target="_blank" rel="noreferrer"
+      <a href={waLink(b)} target="_blank" rel="noreferrer" onClick={() => logClick(b, "whatsapp")}
         className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-whatsapp px-4 py-3 font-bold text-whatsapp-foreground hover:opacity-90">
         <MessageCircle className="h-5 w-5" /> Message on WhatsApp
       </a>
-      <a href={`tel:${b.phone}`} aria-label="Call" className="flex items-center justify-center rounded-xl border-2 border-primary px-4 text-primary hover:bg-primary hover:text-primary-foreground">
+      <a href={`tel:${b.phone}`} onClick={() => logClick(b, "call")} aria-label="Call" className="flex items-center justify-center rounded-xl border-2 border-primary px-4 text-primary hover:bg-primary hover:text-primary-foreground">
         <Phone className="h-5 w-5" />
       </a>
-      <a href={mapsLink(b)} target="_blank" rel="noreferrer" aria-label="Directions" className="flex items-center justify-center rounded-xl border-2 border-primary px-4 text-primary hover:bg-primary hover:text-primary-foreground">
+      <a href={mapsLink(b)} target="_blank" rel="noreferrer" onClick={() => logClick(b, "map")} aria-label="Directions" className="flex items-center justify-center rounded-xl border-2 border-primary px-4 text-primary hover:bg-primary hover:text-primary-foreground">
         <MapPin className="h-5 w-5" />
       </a>
     </div>

@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Eye, MessageCircle, Phone, MapPin } from "lucide-react";
-import { BUSINESSES } from "@/lib/data";
+import { useQuery } from "@tanstack/react-query";
+import { businessesQuery } from "@/lib/data";
 
 export const Route = createFileRoute("/results")({
   head: () => ({
@@ -21,7 +22,9 @@ function series(seed: number) {
 }
 
 function Results() {
-  const [id, setId] = useState(BUSINESSES[0]!.id);
+  const BUSINESSES = useQuery(businessesQuery()).data ?? [];
+  const [picked, setId] = useState<string | null>(null);
+  const id = picked ?? BUSINESSES[0]?.id ?? "";
   const seed = BUSINESSES.findIndex((b) => b.id === id) + 1;
   const views = series(seed);
   const total = views.reduce((a, b) => a + b, 0);

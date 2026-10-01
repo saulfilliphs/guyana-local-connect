@@ -1,119 +1,102 @@
-import food from "@/assets/food.jpg";
-import phone from "@/assets/phone.jpg";
-import salon from "@/assets/salon.jpg";
-import market from "@/assets/market.jpg";
+import { queryOptions } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
-export const CATEGORIES = ["All", "Restaurants", "Phone Repair", "Beauty Salons", "Markets & Groceries"] as const;
-export const ZONES = ["All zones", "Stabroek", "Kitty", "Sheriff St", "Campbellville", "Bourda", "Lamaha Gardens"] as const;
+export const CATEGORIES = ["All", "Restaurants", "Phone Repair", "Beauty Salons", "Markets & Groceries", "Other"] as const;
+export const ZONES = ["All zones", "Stabroek", "Kitty", "Bourda", "Alberttown", "Campbellville", "Sheriff St", "Lamaha Gardens", "Queenstown", "Lacytown"] as const;
+export const BUCKET = "business-photos";
+/** Stored image values starting with this prefix live in the photo storage bucket. */
+export const STORAGE_PREFIX = "storage:";
 
 // [open, close] in 24h hours per weekday Sun..Sat; null = closed
 export type Hours = ([number, number] | null)[];
 
+export interface Promo { id: string; title: string; description: string | null; coupon: string | null; image: string | null }
+
 export interface Business {
-  id: string;
+  id: string; // slug, used in URLs
+  dbId: string;
   name: string;
-  category: (typeof CATEGORIES)[number];
-  zone: (typeof ZONES)[number];
+  category: string;
+  zone: string;
   address: string;
   phone: string;
   whatsapp: string;
   images: string[];
-  offer: string;
-  coupon?: string;
   description: string;
   services: string[];
   hours: Hours;
-  rating: number;
-  reviews: { name: string; stars: number; text: string }[];
-  postedAgo: string;
+  isFeatured: boolean;
+  promo: Promo | null;
+  createdAt: string;
 }
 
-const std: Hours = [null, [8, 18], [8, 18], [8, 18], [8, 18], [8, 20], [9, 16]];
+/** Turns stored image refs into displayable URLs (signed URLs for the private bucket). */
+export async function resolveImages(refs: string[]): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  const paths = [...new Set(refs.filter((r) => r?.startsWith(STORAGE_PREFIX)).map((r) => r.slice(STORAGE_PREFIX.length)))];
+  refs.forEach((r) => r && !r.startsWith(STORAGE_PREFIX) && map.set(r, r));
+  if (paths.length) {
+    const { data } = await supabase.storage.from(BUCKET).createSignedUrls(paths, 60 * 60 * 24 * 7);
+    data?.forEach((d) => d.path && d.signedUrl && map.set(STORAGE_PREFIX + d.path, d.signedUrl));
+  }
+  return map;
+}
 
-export const BUSINESSES: Business[] = [
-  {
-    id: "pepperpot-palace",
-    name: "Pepperpot Palace",
-    category: "Restaurants",
-    zone: "Kitty",
-    address: "12 Vlissengen Rd, Kitty, Georgetown",
-    phone: "+5926001234",
-    whatsapp: "5926001234",
-    images: [food, market, food],
-    offer: "Lunch special: Pepperpot + roti + drink for GYD 1,800",
-    coupon: "LUNCH18",
-    description: "Authentic Guyanese home cooking since 2009. Cook-up rice, pepperpot, curry and fresh roti daily.",
-    services: ["Dine-in", "Takeaway", "Delivery", "Catering"],
-    hours: [[10, 16], [9, 21], [9, 21], [9, 21], [9, 21], [9, 23], [9, 23]],
-    rating: 4.7,
-    reviews: [
-      { name: "Anita R.", stars: 5, text: "Best pepperpot in Georgetown, no contest." },
-      { name: "Marcus D.", stars: 4, text: "Big portions, quick delivery to Campbellville." },
-    ],
-    postedAgo: "2h",
-  },
-  {
-    id: "fixit-mobile",
-    name: "FixIt Mobile GY",
-    category: "Phone Repair",
-    zone: "Stabroek",
-    address: "Water St, Stabroek, Georgetown",
-    phone: "+5926115678",
-    whatsapp: "5926115678",
-    images: [phone, phone],
-    offer: "Screen replacement from GYD 8,000 — done in 1 hour",
-    coupon: "SCREEN10",
-    description: "iPhone, Samsung and Tecno repairs. Original parts and 90-day warranty.",
-    services: ["Screen replacement", "Battery swap", "Water damage", "Unlocking", "Accessories"],
-    hours: std,
-    rating: 4.5,
-    reviews: [
-      { name: "Kevin P.", stars: 5, text: "Fixed my Samsung in 40 minutes. Honest price." },
-      { name: "Shania L.", stars: 4, text: "Good service, a bit busy at lunch time." },
-    ],
-    postedAgo: "4h",
-  },
-  {
-    id: "glow-studio",
-    name: "Glow Beauty Studio",
-    category: "Beauty Salons",
-    zone: "Campbellville",
-    address: "45 Sheriff St, Campbellville, Georgetown",
-    phone: "+5926229012",
-    whatsapp: "5926229012",
-    images: [salon, salon],
-    offer: "20% off braids & silk press this week",
-    coupon: "GLOW20",
-    description: "Hair, nails and lashes by certified stylists. Walk-ins welcome.",
-    services: ["Braids", "Silk press", "Manicure & pedicure", "Lash extensions", "Makeup"],
-    hours: [null, null, [9, 19], [9, 19], [9, 19], [9, 20], [8, 18]],
-    rating: 4.9,
-    reviews: [
-      { name: "Tamika S.", stars: 5, text: "My braids lasted 6 weeks. Love this team!" },
-      { name: "Priya N.", stars: 5, text: "Clean, friendly and on time." },
-    ],
-    postedAgo: "6h",
-  },
-  {
-    id: "bourda-fresh",
-    name: "Bourda Fresh Market",
-    category: "Markets & Groceries",
-    zone: "Bourda",
-    address: "Robb St, Bourda, Georgetown",
-    phone: "+5926333456",
-    whatsapp: "5926333456",
-    images: [market, market],
-    offer: "Fresh juice 2-for-1 every morning until 10am",
-    description: "Local fruits, vegetables, fresh juices and spices straight from the farms of Essequibo and Berbice.",
-    services: ["Fresh produce", "Juices", "Spices", "Home delivery"],
-    hours: [[6, 12], [6, 18], [6, 18], [6, 18], [6, 18], [6, 18], [5, 18]],
-    rating: 4.6,
-    reviews: [{ name: "Joel B.", stars: 5, text: "Cheapest mangoes and sorrel in town." }],
-    postedAgo: "1d",
-  },
-];
+type PromoRow = Tables<"promotions_stories">;
+type BizRow = Tables<"businesses"> & { promotions_stories: PromoRow[] };
 
-export const getBusiness = (id: string) => BUSINESSES.find((b) => b.id === id);
+function normalizeHours(h: unknown): Hours {
+  const arr = Array.isArray(h) ? h : [];
+  return Array.from({ length: 7 }, (_, i) => {
+    const v = arr[i];
+    return Array.isArray(v) && v.length === 2 ? [Number(v[0]), Number(v[1])] : null;
+  });
+}
+
+async function fetchBusinesses(slug?: string): Promise<Business[]> {
+  let q = supabase.from("businesses").select("*, promotions_stories(*)").eq("status", "active");
+  if (slug) q = q.eq("slug", slug);
+  const { data, error } = await q.order("is_featured", { ascending: false }).order("created_at", { ascending: false });
+  if (error) throw error;
+  const rows = (data ?? []) as BizRow[];
+  const now = Date.now();
+  const activePromo = (r: BizRow) =>
+    r.promotions_stories
+      .filter((p) => p.is_active && new Date(p.starts_at).getTime() <= now && (!p.expires_at || new Date(p.expires_at).getTime() > now))
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+  const refs = rows.flatMap((r) => [...r.images, r.logo_url ?? "", activePromo(r)?.image_url ?? ""]);
+  const urls = await resolveImages(refs);
+  const u = (r: string | null | undefined) => (r ? urls.get(r) ?? null : null);
+  return rows.map((r) => {
+    const p = activePromo(r);
+    const images = r.images.map((i) => u(i)).filter(Boolean) as string[];
+    if (!images.length && u(r.logo_url)) images.push(u(r.logo_url)!);
+    return {
+      id: r.slug, dbId: r.id, name: r.name, category: r.category, zone: r.zone,
+      address: r.address ?? `${r.zone}, Georgetown`, phone: r.phone ?? "", whatsapp: (r.whatsapp ?? r.phone ?? "").replace(/\D/g, ""),
+      images: images.length ? images : ["/seed/market.jpg"], description: r.description ?? "", services: r.services,
+      hours: normalizeHours(r.hours), isFeatured: r.is_featured, createdAt: r.created_at,
+      promo: p ? { id: p.id, title: p.title, description: p.description, coupon: p.coupon, image: u(p.image_url) } : null,
+    };
+  });
+}
+
+export const businessesQuery = () => queryOptions({ queryKey: ["businesses"], queryFn: () => fetchBusinesses() });
+export const businessQuery = (slug: string) =>
+  queryOptions({ queryKey: ["business", slug], queryFn: async () => (await fetchBusinesses(slug))[0] ?? null });
+
+export type ClickType = "whatsapp" | "call" | "map" | "view";
+export function logClick(b: Business, type: ClickType) {
+  void supabase.from("click_events").insert({ business_id: b.dbId, event_type: type }).then(() => {});
+}
+
+export function timeAgo(iso: string) {
+  const m = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  if (m < 60) return `${m}m`;
+  if (m < 1440) return `${Math.round(m / 60)}h`;
+  return `${Math.round(m / 1440)}d`;
+}
 
 /** Georgetown is UTC-4 year-round (no DST). */
 export function georgetownNow(d = new Date()) {
@@ -128,7 +111,7 @@ export function openStatus(hours: Hours, d = new Date()) {
   return { open: false, label: t && hour < t[0] ? `Closed · opens ${fmt(t[0])}` : "Closed now" };
 }
 
-export const fmt = (h: number) => `${((h + 11) % 12) + 1}${h < 12 ? "am" : "pm"}`;
+export const fmt = (h: number) => `${((h + 11) % 12) + 1}${h % 24 < 12 ? "am" : "pm"}`;
 export const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export const waLink = (b: Business) =>
   `https://wa.me/${b.whatsapp}?text=${encodeURIComponent(`Hi ${b.name}, I saw your offer on Guyana Ad Local!`)}`;
