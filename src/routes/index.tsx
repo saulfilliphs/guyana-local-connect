@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Search, Star, Ticket, X } from "lucide-react";
-import { BUSINESSES, CATEGORIES, ZONES, type Business } from "@/lib/data";
+import { businessesQuery, timeAgo, CATEGORIES, ZONES, type Business } from "@/lib/data";
 import { CTAs, OpenBadge } from "@/components/site";
 
 export const Route = createFileRoute("/")({
@@ -13,10 +14,14 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Local offers and businesses in Georgetown, one tap from WhatsApp." },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(businessesQuery()),
+  errorComponent: ({ error }) => <p className="p-10 text-center text-destructive">Could not load the feed: {error.message}</p>,
+  notFoundComponent: () => <p className="p-10 text-center">Not found.</p>,
   component: Feed,
 });
 
 function Feed() {
+  const { data: BUSINESSES } = useSuspenseQuery(businessesQuery());
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string>("All");
   const [zone, setZone] = useState<string>("All zones");
@@ -25,8 +30,10 @@ function Feed() {
   const list = useMemo(() => BUSINESSES.filter((b) =>
     (cat === "All" || b.category === cat) &&
     (zone === "All zones" || b.zone === zone) &&
-    `${b.name} ${b.offer} ${b.services.join(" ")}`.toLowerCase().includes(q.toLowerCase())
-  ), [q, cat, zone]);
+    `${b.name} ${b.promo?.title ?? ""} ${b.description} ${b.services.join(" ")}`.toLowerCase().includes(q.toLowerCase())
+  ), [BUSINESSES, q, cat, zone]);
+
+  const stories = BUSINESSES.filter((b) => b.promo);
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-16">
@@ -53,10 +60,11 @@ function Feed() {
       <section className="my-4">
         <h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">Today's deals</h2>
         <div className="flex gap-4 overflow-x-auto pb-2">
-          {BUSINESSES.map((b) => (
+          {stories.length === 0 && <p className="text-sm text-muted-foreground">No deals today.</p>}
+          {stories.map((b) => (
             <button key={b.id} onClick={() => setStory(b)} className="flex w-20 shrink-0 flex-col items-center gap-1">
               <span className="rounded-full bg-gradient-to-tr from-accent to-primary p-[3px]">
-                <img src={b.images[0]} alt="" className="h-16 w-16 rounded-full border-2 border-background object-cover" />
+                <img src={b.promo?.image ?? b.images[0]} alt="" className="h-16 w-16 rounded-full border-2 border-background object-cover" />
               </span>
               <span className="w-full truncate text-xs font-medium">{b.name}</span>
             </button>
@@ -73,20 +81,20 @@ function Feed() {
               <div className="flex-1">
                 <Link to="/business/$id" params={{ id: b.id }} className="font-bold hover:underline">{b.name}</Link>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{b.category} · {b.zone} · {b.postedAgo}</span>
+                  <span>{b.category} · {b.zone} · {timeAgo(b.createdAt)}</span>
                 </div>
               </div>
-              <span className="flex items-center gap-1 text-sm font-semibold"><Star className="h-4 w-4 fill-accent text-accent" />{b.rating}</span>
+              {b.isFeatured && <span className="flex items-center gap-1 rounded-full bg-accent/20 px-2 py-0.5 text-xs font-bold"><Star className="h-3 w-3 fill-accent text-accent" />Featured</span>}
             </div>
             <Link to="/business/$id" params={{ id: b.id }}>
               <img src={b.images[0]} alt={b.name} className="aspect-[4/3] w-full object-cover" />
             </Link>
             <div className="space-y-3 p-4">
               <OpenBadge b={b} />
-              <p className="text-lg font-bold leading-snug">{b.offer}</p>
-              {b.coupon && (
+              {b.promo && <p className="text-lg font-bold leading-snug">{b.promo.title}</p>}
+              {b.promo?.coupon && (
                 <div className="inline-flex items-center gap-2 rounded-lg border-2 border-dashed border-accent bg-accent/15 px-3 py-1.5 text-sm font-bold">
-                  <Ticket className="h-4 w-4" /> Coupon: {b.coupon}
+                  <Ticket className="h-4 w-4" /> Coupon: {b.promo.coupon}
                 </div>
               )}
               <p className="text-sm text-muted-foreground">{b.description}</p>
@@ -99,11 +107,12 @@ function Feed() {
       {story && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/80 p-4" onClick={() => setStory(null)}>
           <div className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-card" onClick={(e) => e.stopPropagation()}>
-            <img src={story.images[0]} alt="" className="aspect-[9/12] w-full object-cover" />
+            <img src={story.promo?.image ?? story.images[0]} alt="" className="aspect-[9/12] w-full object-cover" />
             <button onClick={() => setStory(null)} aria-label="Close" className="absolute right-3 top-3 rounded-full bg-card/80 p-1.5"><X className="h-5 w-5" /></button>
             <div className="absolute inset-x-0 bottom-0 space-y-3 bg-gradient-to-t from-primary to-transparent p-4 pt-16 text-primary-foreground">
               <p className="text-sm font-semibold text-accent">{story.name}</p>
-              <p className="text-xl font-extrabold">{story.offer}</p>
+              <p className="text-xl font-extrabold">{story.promo?.title}</p>
+              {story.promo?.coupon && <p className="text-sm font-bold">Coupon: {story.promo.coupon}</p>}
               <CTAs b={story} />
             </div>
           </div>
