@@ -14,16 +14,217 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      businesses: {
+        Row: {
+          address: string | null
+          category: string
+          created_at: string
+          description: string | null
+          hours: Json
+          id: string
+          images: string[]
+          is_featured: boolean
+          logo_url: string | null
+          name: string
+          phone: string | null
+          services: string[]
+          slug: string
+          status: Database["public"]["Enums"]["business_status"]
+          updated_at: string
+          whatsapp: string | null
+          zone: string
+        }
+        Insert: {
+          address?: string | null
+          category: string
+          created_at?: string
+          description?: string | null
+          hours?: Json
+          id?: string
+          images?: string[]
+          is_featured?: boolean
+          logo_url?: string | null
+          name: string
+          phone?: string | null
+          services?: string[]
+          slug: string
+          status?: Database["public"]["Enums"]["business_status"]
+          updated_at?: string
+          whatsapp?: string | null
+          zone: string
+        }
+        Update: {
+          address?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          hours?: Json
+          id?: string
+          images?: string[]
+          is_featured?: boolean
+          logo_url?: string | null
+          name?: string
+          phone?: string | null
+          services?: string[]
+          slug?: string
+          status?: Database["public"]["Enums"]["business_status"]
+          updated_at?: string
+          whatsapp?: string | null
+          zone?: string
+        }
+        Relationships: []
+      }
+      click_events: {
+        Row: {
+          business_id: string
+          created_at: string
+          event_type: Database["public"]["Enums"]["click_type"]
+          id: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          event_type: Database["public"]["Enums"]["click_type"]
+          id?: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          event_type?: Database["public"]["Enums"]["click_type"]
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "click_events_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_requests: {
+        Row: {
+          business_name: string
+          contact_name: string
+          created_at: string
+          email: string | null
+          id: string
+          message: string | null
+          phone: string
+          plan: Database["public"]["Enums"]["plan_tier"]
+          status: string
+        }
+        Insert: {
+          business_name: string
+          contact_name: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string | null
+          phone: string
+          plan: Database["public"]["Enums"]["plan_tier"]
+          status?: string
+        }
+        Update: {
+          business_name?: string
+          contact_name?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string | null
+          phone?: string
+          plan?: Database["public"]["Enums"]["plan_tier"]
+          status?: string
+        }
+        Relationships: []
+      }
+      promotions_stories: {
+        Row: {
+          business_id: string
+          coupon: string | null
+          created_at: string
+          description: string | null
+          expires_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          business_id: string
+          coupon?: string | null
+          created_at?: string
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          starts_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string
+          coupon?: string | null
+          created_at?: string
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          starts_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotions_stories_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      business_status: "active" | "paused"
+      click_type: "whatsapp" | "call" | "map" | "view"
+      plan_tier: "free" | "business" | "featured" | "campaign"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +351,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      business_status: ["active", "paused"],
+      click_type: ["whatsapp", "call", "map", "view"],
+      plan_tier: ["free", "business", "featured", "campaign"],
+    },
   },
 } as const
