@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(businessesQuery()),
-  errorComponent: ({ error }) => <p className="p-10 text-center text-destructive">Could not load the feed: {error.message}</p>,
+  errorComponent: ({ error }) => <p className="p-10 text-center text-destructive">Could not load the feed: {(error as Error).message}</p>,
   notFoundComponent: () => <p className="p-10 text-center">Not found.</p>,
   component: Feed,
 });

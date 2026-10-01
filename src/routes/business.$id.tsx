@@ -18,7 +18,7 @@ export const Route = createFileRoute("/business/$id")({
     const d = b.promo?.title ?? b.description;
     return { meta: [{ title: t }, { name: "description", content: d }, { property: "og:title", content: t }, { property: "og:description", content: d }] };
   },
-  errorComponent: ({ error }) => <p className="p-10 text-center text-destructive">Could not load this business: {error.message}</p>,
+  errorComponent: ({ error }) => <p className="p-10 text-center text-destructive">Could not load this business: {(error as Error).message}</p>,
   notFoundComponent: () => <p className="p-10 text-center">Business not found. <Link to="/" className="underline">Back to feed</Link></p>,
   component: Detail,
 });

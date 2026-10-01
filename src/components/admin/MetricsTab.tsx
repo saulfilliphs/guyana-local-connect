@@ -62,7 +62,7 @@ export function MetricsTab() {
         <ul className="space-y-3">
           {rows.map(({ b, c, total }) => (
             <li key={b.id}>
-              <div className="flex justify-between text-sm"><b>{b.name}</b><span className="text-muted-foreground">{c.view} views · {c.whatsapp} WhatsApp · {c.call} calls · {c.map} maps</span></div>
+              <div className="flex justify-between text-sm"><b>{b.name}</b><span className="text-muted-foreground">{c["view"]} views · {c["whatsapp"]} WhatsApp · {c["call"]} calls · {c["map"]} maps</span></div>
               <div className="mt-1 flex h-3 overflow-hidden rounded-full bg-muted" style={{ width: `${Math.max(4, (total / max) * 100)}%` }}>
                 {TYPES.map((t) => total > 0 && <div key={t.k} className={t.cls} style={{ width: `${(c[t.k]! / total) * 100}%` }} />)}
               </div>
