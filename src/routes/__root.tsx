@@ -12,7 +12,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { Header } from "@/components/site";
+import { Header, BottomNavigation, MarketplacePanel } from "@/components/site";
+import { MarketplaceProvider } from "@/components/marketplace-context";
 
 function NotFoundComponent() {
   return (
@@ -91,7 +92,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -121,8 +122,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Header />
-      <Outlet />
+      <MarketplaceProvider>
+        <Header />
+        <Outlet />
+        <BottomNavigation />
+        <MarketplacePanel />
+      </MarketplaceProvider>
     </QueryClientProvider>
   );
 }
