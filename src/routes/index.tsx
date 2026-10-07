@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Star, Ticket, X, ArrowRight, Utensils, Smartphone, Sparkles, ShoppingBag, Wrench, BedDouble, LayoutGrid, Ellipsis, Flame, MapPin, SlidersHorizontal } from "lucide-react";
-import { businessesQuery, timeAgo, type Business } from "@/lib/data";
+import { businessesQuery, timeAgo, openStatus, type Business } from "@/lib/data";
 import { CTAs, OpenBadge, SaveButton } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { useMarketplace } from "@/components/marketplace-context";
@@ -57,10 +57,7 @@ function Feed() {
   useEffect(() => { setNow(new Date()); const interval = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(interval); }, []);
   useEffect(() => { if (!story) return; const close = (event: KeyboardEvent) => { if (event.key === "Escape") setStory(null); }; window.addEventListener("keydown", close); return () => window.removeEventListener("keydown", close); }, [story]);
   const list = useMemo(() => businesses.filter((b) => {
-    const local = now ? new Date(now.getTime() - 4 * 3600 * 1000) : null;
-    const hours = local ? b.hours[local.getUTCDay()] : null;
-    const hour = local ? local.getUTCHours() + local.getUTCMinutes() / 60 : 0;
-    return (cat === "All" || b.category === cat) && (zone === "All zones" || b.zone === zone) && (!openOnly || !!hours && hour >= hours[0] && hour < hours[1]) && `${b.name} ${b.promo?.title ?? ""} ${b.description} ${b.services.join(" ")}`.toLowerCase().includes(search.toLowerCase());
+    return (cat === "All" || b.category === cat) && (zone === "All zones" || b.zone === zone) && (!openOnly || now !== null && openStatus(b.hours, now).open) && `${b.name} ${b.promo?.title ?? ""} ${b.description} ${b.services.join(" ")}`.toLowerCase().includes(search.toLowerCase());
   }), [businesses, cat, zone, search, openOnly, now]);
   const featured = list.find((b) => b.isFeatured) ?? list[0];
   const stories = businesses.filter((b) => b.promo);
