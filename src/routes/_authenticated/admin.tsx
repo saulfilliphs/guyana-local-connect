@@ -5,6 +5,7 @@ import { BusinessesTab } from "@/components/admin/BusinessesTab";
 import { PromotionsTab } from "@/components/admin/PromotionsTab";
 import { RequestsTab } from "@/components/admin/RequestsTab";
 import { MetricsTab } from "@/components/admin/MetricsTab";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { property: "og:title", content: "Admin panel — Guyana Ad Local" },
       { property: "og:description", content: "Manage businesses, promotions and plan requests." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   beforeLoad: async ({ context }) => {
@@ -33,16 +35,15 @@ const TABS = [
 
 function Admin() {
   const [tab, setTab] = useState<(typeof TABS)[number]["k"]>("businesses");
-  const Active = TABS.find((t) => t.k === tab)!.C;
+  const Active = (TABS.find((t) => t.k === tab) ?? TABS[0]).C;
   return (
-    <div className="mx-auto max-w-5xl space-y-5 px-4 py-6 pb-16">
+    <div className="page-shell fade-in space-y-6">
       <h1 className="font-display text-3xl font-extrabold">Admin panel</h1>
-      <div className="flex gap-1 overflow-x-auto border-b">
+      <div className="scroll-row flex gap-2 border-b pb-3">
         {TABS.map((t) => (
-          <button key={t.k} onClick={() => setTab(t.k)}
-            className={`shrink-0 border-b-2 px-4 py-2 text-sm font-bold ${tab === t.k ? "border-accent text-primary" : "border-transparent text-muted-foreground"}`}>
+          <Button variant={tab === t.k ? "gold" : "secondary"} key={t.k} onClick={() => setTab(t.k)} className="shrink-0">
             {t.label}
-          </button>
+          </Button>
         ))}
       </div>
       <Active />

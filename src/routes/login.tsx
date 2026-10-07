@@ -2,6 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { UserRound } from "lucide-react";
 
 const search = z.object({ redirect: z.string().optional(), denied: z.string().optional() });
 
@@ -13,6 +15,7 @@ export const Route = createFileRoute("/login")({
       { name: "description", content: "Sign in or create your Guyana Ad Local account." },
       { property: "og:title", content: "Sign in — Guyana Ad Local" },
       { property: "og:description", content: "Sign in or create your Guyana Ad Local account." },
+      { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Login,
@@ -50,19 +53,20 @@ function Login() {
   }
 
   return (
-    <div className="mx-auto max-w-sm px-4 py-12">
+    <div className="fade-in mx-auto max-w-md px-6 py-10">
+      <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-secondary text-primary"><UserRound /></div>
       <h1 className="mb-6 font-display text-3xl font-extrabold">{mode === "in" ? "Sign in" : "Create account"}</h1>
       <form onSubmit={submit} className="space-y-3">
-        <input type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border bg-card px-4 py-3" />
-        <input type="password" required placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-xl border bg-card px-4 py-3" />
-        <button disabled={busy} className="w-full rounded-xl bg-primary px-4 py-3 font-bold text-primary-foreground disabled:opacity-60">
+        <label className="block space-y-2 text-xs font-semibold">Email<input aria-label="Email" type="email" autoComplete="email" required placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border bg-card px-4 py-3.5" /></label>
+        <label className="block space-y-2 text-xs font-semibold">Password<input aria-label="Password" type="password" autoComplete={mode === "in" ? "current-password" : "new-password"} required placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-xl border bg-card px-4 py-3.5" /></label>
+        <Button disabled={busy} variant="gold" size="lg" className="w-full">
           {busy ? "…" : mode === "in" ? "Sign in" : "Sign up"}
-        </button>
+        </Button>
       </form>
       {msg && <p className="mt-3 text-sm text-muted-foreground">{msg}</p>}
-      <button onClick={() => { setMode(mode === "in" ? "up" : "in"); setMsg(null); }} className="mt-4 text-sm font-semibold text-primary underline">
+      <Button variant="link" onClick={() => { setMode(mode === "in" ? "up" : "in"); setMsg(null); }} className="mt-4 px-0">
         {mode === "in" ? "No account? Sign up" : "Have an account? Sign in"}
-      </button>
+      </Button>
     </div>
   );
 }

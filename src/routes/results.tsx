@@ -11,6 +11,7 @@ export const Route = createFileRoute("/results")({
       { name: "description", content: "See how many people viewed your listing, messaged you on WhatsApp and called your business." },
       { property: "og:title", content: "Results — Guyana Ad Local" },
       { property: "og:description", content: "Track views, WhatsApp clicks and calls for your Georgetown business." },
+      { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Results,
@@ -37,20 +38,20 @@ function Results() {
   ];
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 pb-16">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
+    <div className="page-shell fade-in">
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+        <div className="min-w-0">
           <h1 className="font-display text-3xl font-extrabold">Results</h1>
           <p className="text-sm text-muted-foreground">Last 7 days · sample data</p>
         </div>
-        <select value={id} onChange={(e) => setId(e.target.value)} className="rounded-xl border bg-card px-3 py-2 text-sm">
+        <select aria-label="Select business" value={id} onChange={(e) => setId(e.target.value)} className="min-w-0 rounded-xl border bg-card px-3 py-3 text-sm">
           {BUSINESSES.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
         </select>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className="rounded-2xl border bg-card p-4">
+          <div key={s.label} className="premium-card p-5">
             <s.icon className={`h-5 w-5 ${s.cls}`} />
             <p className="mt-2 text-3xl font-extrabold">{s.value.toLocaleString()}</p>
             <p className="text-xs text-muted-foreground">{s.label}</p>
@@ -58,11 +59,11 @@ function Results() {
         ))}
       </div>
 
-      <div className="mt-6 rounded-2xl border bg-card p-5">
+      <div className="mt-8 border-y py-6">
         <h2 className="mb-4 font-bold">Daily views</h2>
-        <div className="flex h-48 items-end gap-3">
+        <div className="flex h-56 items-end gap-2 sm:gap-4">
           {views.map((v, i) => (
-            <div key={i} className="flex flex-1 flex-col items-center gap-1">
+            <div key={i} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
               <span className="text-xs font-semibold">{v}</span>
               <div className="w-full rounded-t-lg bg-gradient-to-t from-primary to-accent" style={{ height: `${(v / max) * 100}%` }} />
               <span className="text-xs text-muted-foreground">{week[i]}</span>
