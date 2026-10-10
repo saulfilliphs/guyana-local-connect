@@ -6,6 +6,7 @@ import { openStatus, waLink, mapsLink, logClick, businessesQuery, ZONES, type Bu
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useMarketplace } from "@/components/marketplace-context";
+import botanicalHeader from "@/assets/botanical-header.jpg";
 
 function AuthLink({ cls }: { cls: string }) {
   const [signedIn, setSignedIn] = useState(false);
@@ -29,27 +30,28 @@ export function Header() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const cls = "inline-flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground";
-  return <header className="brand-header relative z-30 text-primary-foreground">
-    <div className="mx-auto max-w-[1120px] px-5 pb-6 pt-5 sm:px-6 sm:pb-8">
+  return <header className="brand-header botanical-header relative z-30 overflow-visible text-primary-foreground">
+    <img src={botanicalHeader} width={1536} height={768} alt="" aria-hidden="true" className="botanical-canopy pointer-events-none absolute inset-0 h-full w-full object-cover" />
+    <div className="relative mx-auto max-w-[1120px] px-4 pb-4 pt-10 sm:px-6 sm:pt-14">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <Link to="/" onClick={() => setPanel(null)} className="flex min-w-0 items-center gap-3">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-primary-foreground/20 bg-primary-foreground/10"><span className="brand-mark h-7 w-6 bg-accent" /></span>
-          <div className="min-w-0"><span className="block text-xl font-extrabold sm:text-2xl">Guyana <span className="text-accent">Ad</span> Local</span><span className="mt-1 hidden text-[11px] font-medium text-primary-foreground/65 sm:block">Local Businesses • Real People • Big Opportunities</span></div>
+          <img src="/favicon.svg" alt="" width={64} height={80} className="h-14 w-11 shrink-0 sm:h-16 sm:w-12" />
+          <div className="min-w-0"><span className="brand-title block text-xl font-extrabold sm:text-3xl">Guyana <span className="text-accent">Ad</span> Local</span><span className="mt-1 hidden text-[11px] font-semibold text-primary-foreground/90 sm:block">Local Businesses • Real People • Big Opportunities</span></div>
         </Link>
         <div className="flex shrink-0 items-center gap-1 sm:gap-3">
           <nav className="hidden items-center gap-1 lg:flex"><Link to="/" className={cls} activeProps={{ className: "text-accent" }}>Explore</Link><Link to="/results" className={cls}>Results</Link><Link to="/pricing" className={cls}>Plans</Link><AuthLink cls={cls} /></nav>
-          <Button variant="glass" size="icon" aria-label="Notifications" title="Notifications" onClick={() => setPanel("notifications")}><Bell /></Button>
-          <Button variant="glass" size="icon" aria-label="Menu" title="Menu" onClick={() => setMenu(!menu)}>{menu ? <X /> : <Menu />}</Button>
+          <Button variant="ghost" size="icon" className="header-icon" aria-label="Notifications" title="Notifications" onClick={() => setPanel("notifications")}><Bell /></Button>
+          <Button variant="ghost" size="icon" className="header-icon" aria-label="Menu" title="Menu" onClick={() => setMenu(!menu)}>{menu ? <X /> : <Menu />}</Button>
         </div>
       </div>
-      <p className="mt-3 text-[10px] font-medium text-primary-foreground/70 sm:hidden">Local Businesses • Real People • Big Opportunities</p>
+      <p className="mt-2 text-[10px] font-semibold text-primary-foreground/90 sm:hidden">Local Businesses • Real People • Big Opportunities</p>
       {menu && <nav className="photo-glass absolute right-5 top-20 z-40 flex min-w-48 flex-col rounded-2xl p-2" onClick={() => setMenu(false)}><Link to="/" className={cls}>Feed</Link><Link to="/results" className={cls}>Results</Link><Link to="/pricing" className={cls}>Plans</Link><AuthLink cls={cls} /></nav>}
       <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_230px] sm:gap-5">
-        <form className="glass-search flex min-w-0 items-center gap-3 rounded-2xl border border-primary-foreground/40 p-1.5 pl-4 text-foreground" onSubmit={(e) => { e.preventDefault(); if (pathname !== "/") navigate({ to: "/" }); }}>
-          <Search className="h-5 w-5 shrink-0 text-primary" /><input aria-label="Search businesses" value={search} onChange={(e) => { setSearch(e.target.value); if (pathname !== "/") navigate({ to: "/" }); }} placeholder="Search for restaurants, shops, services..." className="h-10 w-full min-w-0 bg-transparent text-xs outline-none sm:text-sm" />
-          <Button variant="gold" size="icon" type="submit" aria-label="Search"><Search /></Button>
+        <form className="glass-search reference-search flex min-w-0 items-center gap-3 rounded-full border border-primary-foreground/40 p-1.5 pl-4 text-primary-foreground" onSubmit={(e) => { e.preventDefault(); if (pathname !== "/") navigate({ to: "/" }); }}>
+          <Search className="h-6 w-6 shrink-0" /><input aria-label="Search businesses" value={search} onChange={(e) => { setSearch(e.target.value); if (pathname !== "/") navigate({ to: "/" }); }} placeholder="Search for restaurants, shops, services..." className="h-10 w-full min-w-0 bg-transparent text-xs outline-none placeholder:text-primary-foreground/85 sm:text-sm" />
+          <Button variant="gold" size="icon" type="submit" className="rounded-full" aria-label="Search"><Search /></Button>
         </form>
-        <label className="flex min-w-0 items-center gap-3 rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-2 sm:py-2.5"><MapPin className="h-4 w-4 shrink-0 text-accent" /><div className="min-w-0 flex-1"><span className="hidden text-[10px] text-primary-foreground/60 sm:block">Your neighborhood</span><select aria-label="Location" value={zone} onChange={(e) => { setZone(e.target.value); if (pathname !== "/") navigate({ to: "/" }); }} className="w-full appearance-none bg-transparent text-xs font-bold outline-none sm:text-sm">{ZONES.map((z) => <option className="bg-card text-foreground" key={z} value={z}>{z === "All zones" ? "Georgetown" : z}</option>)}</select></div><ChevronDown className="h-4 w-4 shrink-0" /></label>
+        <label className="reference-location flex min-w-0 items-center gap-2 rounded-full sm:border sm:border-primary-foreground/20 sm:bg-primary-foreground/10 sm:px-4 sm:py-2.5"><MapPin className="h-4 w-4 shrink-0 text-accent" /><div className="min-w-0 flex-1"><span className="hidden text-[10px] text-primary-foreground/60 sm:block">Your neighborhood</span><select aria-label="Location" value={zone} onChange={(e) => { setZone(e.target.value); if (pathname !== "/") navigate({ to: "/" }); }} className="w-full appearance-none bg-transparent text-xs font-bold outline-none sm:text-sm">{ZONES.map((z) => <option className="bg-card text-foreground" key={z} value={z}>{z === "All zones" ? "Georgetown" : z}</option>)}</select></div><ChevronDown className="h-4 w-4 shrink-0" /></label>
       </div>
     </div>
   </header>;
@@ -80,7 +82,7 @@ export function CTAs({ b }: { b: Business }) {
 export function BottomNavigation() {
   const { panel, setPanel } = useMarketplace();
   const path = useRouterState({ select: (state) => state.location.pathname });
-  return <nav aria-label="Bottom navigation" className="bottom-dock fixed inset-x-4 bottom-4 z-40 mx-auto grid max-w-[520px] grid-cols-5 gap-1 rounded-[24px] border border-primary-foreground/15 p-2 pb-[max(8px,env(safe-area-inset-bottom))] text-primary-foreground">
+  return <nav aria-label="Bottom navigation" className="bottom-dock fixed inset-x-2 bottom-2 z-40 mx-auto grid max-w-[620px] grid-cols-5 gap-1 rounded-[28px] border border-primary-foreground/20 p-2 pb-[max(8px,env(safe-area-inset-bottom))] text-primary-foreground">
     <Button asChild variant="ghost" className={`h-14 flex-col gap-1 rounded-2xl text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path === "/" && !panel ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><Link to="/" onClick={() => setPanel(null)}><Home />Home</Link></Button>
     {([{ key: "map", label: "Map", icon: MapPin }, { key: "saved", label: "Saved", icon: Heart }, { key: "notifications", label: "Notifications", icon: Bell }] as const).map((item) => <Button key={item.key} variant="ghost" onClick={() => setPanel(item.key)} className={`h-14 flex-col gap-1 rounded-2xl text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${panel === item.key ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><item.icon />{item.label}</Button>)}
     <Button asChild variant="ghost" className={`h-14 flex-col gap-1 rounded-2xl text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path.includes("login") || path.includes("admin") ? "text-accent" : "text-primary-foreground/70"}`}><Link to="/login" onClick={() => setPanel(null)}><UserRound />Profile</Link></Button>

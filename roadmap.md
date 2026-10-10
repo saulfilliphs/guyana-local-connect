@@ -1,3 +1,8 @@
+# Reference-faithful visual adjustment
+- [ ] Adjust green botanical header, large category icons, stories and photo overlays to the supplied reference.
+- [ ] Preserve all existing data, actions and shared navigation.
+- [ ] Verify rendering and interactions on desktop and mobile.
+
 # Premium Hybrid redesign
 - [x] Refresh shared colors, typography, controls and navigation.
 - [x] Restyle feed with featured photography, stories, nearby businesses and category discovery.

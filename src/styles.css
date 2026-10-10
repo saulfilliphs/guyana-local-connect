@@ -100,6 +100,9 @@
   --photo-shade: linear-gradient(180deg, transparent 30%, oklch(0.18 0.035 175 / 0.22) 60%, oklch(0.18 0.035 175 / 0.76));
   --glass-photo: oklch(0.24 0.055 175 / 0.66);
   --control-inset: inset 1px 1px 3px oklch(0.305 0.045 179 / 0.06), inset -1px -1px 3px oklch(1 0 0 / 0.65);
+  --glass-search-green: oklch(0.58 0.055 175 / 0.36);
+  --gold-highlight-shadow: 0 3px 18px oklch(0.818901 0.162510 83.966829 / 0.26);
+  --story-ring-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--primary), 0 5px 14px oklch(0.818901 0.162510 83.966829 / 0.2);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -190,6 +193,48 @@
 .favorite-on svg { animation: heart-pop 250ms ease; }
 .fade-in { animation: reveal 350ms ease both; }
 .page-shell { max-width: 1120px; margin-inline: auto; padding: 32px 24px; }
+.botanical-header { background: var(--deep); }
+.botanical-canopy { object-position: center top; }
+.reference-search { background: var(--glass-search-green); box-shadow: var(--control-inset), var(--soft-shadow); }
+.header-icon { color: var(--primary-foreground); background: transparent; }
+.header-icon:hover { color: var(--accent); background: color-mix(in oklab, var(--primary-foreground) 10%, transparent); }
+.header-icon svg { width: 25px; height: 25px; }
+.reference-feed { padding-top: 0; }
+.reference-categories { margin-inline: calc((min(100vw, 1120px) - 100vw) / 2 - 24px); padding-inline: max(24px, calc((100vw - 1072px) / 2)); background: var(--deep); border-radius: 0 0 28px 28px; }
+.reference-category { height: 96px; min-width: 88px; border-radius: 0; background: transparent; }
+.reference-category:hover { background: transparent; color: var(--accent); }
+.category-icon { display: grid; width: 86px; height: 58px; place-items: center; border-radius: 30px; border: 1px solid color-mix(in oklab, var(--primary-foreground) 25%, transparent); background: color-mix(in oklab, var(--primary-foreground) 9%, transparent); box-shadow: var(--control-inset); transition: background 180ms ease; }
+.category-icon svg { width: 28px; height: 28px; stroke-width: 2.8; }
+.is-selected .category-icon { background: var(--accent); color: var(--deep); border-color: var(--accent); box-shadow: var(--gold-highlight-shadow); }
+.story-ring { box-shadow: var(--story-ring-shadow); }
+.story-ring > span { width: 15px; height: 15px; border-color: var(--accent); }
+.reference-featured { border: 1px solid color-mix(in oklab, var(--accent) 65%, transparent); }
+.reference-featured .featured-photo { height: 420px; object-position: center; }
+.reference-featured .featured-panel { background: color-mix(in oklab, var(--deep) 58%, transparent); backdrop-filter: blur(9px); }
+.featured-open { background: color-mix(in oklab, var(--deep) 75%, transparent); }
+.featured-open > span { color: var(--primary-foreground); }
+.featured-cta { box-shadow: var(--gold-highlight-shadow); }
+.bottom-dock { background: var(--header-gradient); }
+.bottom-dock svg { width: 25px; height: 25px; }
+.bottom-dock [data-slot="button"] { font-size: 11px; }
+.bottom-dock a.bg-primary-foreground\/10 { box-shadow: var(--gold-highlight-shadow); background: color-mix(in oklab, var(--accent) 16%, transparent); }
+@media (max-width: 640px) {
+  .reference-feed { padding-top: 0; padding-inline: 12px; }
+  .reference-categories { margin-inline: -12px; padding-inline: 12px; border-radius: 0 0 16px 16px; }
+  .reference-category { min-width: 78px; height: 89px; font-size: 10px; }
+  .category-icon { width: 76px; height: 52px; }
+  .reference-location { justify-self: end; width: 155px; }
+  .botanical-canopy { object-position: 38% top; }
+  .reference-featured .featured-photo { height: 380px; }
+  .reference-featured .featured-panel h2 { font-size: 23px; }
+  .reference-featured .featured-panel { padding: 14px; }
+  .reference-stories { margin-top: 12px; }
+  .reference-stories .scroll-row { gap: 15px; padding: 5px 4px 8px; }
+}
+@media (max-width: 360px) {
+  .brand-title { font-size: 17px; }
+  .header-icon { width: 35px; }
+}
 @keyframes heart-pop { 50% { transform: scale(1.22); } }
 @keyframes reveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 640px) {
