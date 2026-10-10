@@ -12,4 +12,5 @@
 - Public pages read businesses/promotions with the browser Supabase client through react-query options in src/lib/data.ts; admin UI lives in src/components/admin/* and relies on RLS for authorization.
 - Shared marketplace presentation state lives in a root provider; browser-only saved favorites use localStorage after hydration so discovery controls work across pages without changing backend business data.
 - Reuse shared Header, OpenBadge, CTAs and Button across marketplace pages; use global semantic design tokens so visual upgrades remain consistent without replacing business logic.
+- Keep botanical header imagery and reference-inspired category styling in the shared visual system; category selection remains in the existing feed so presentation changes do not alter business queries.
 - Ratings and sponsorship must never be inferred or fabricated; show unrated states until genuine review or sponsorship data exists.
