@@ -71,21 +71,21 @@
 
 :root {
   --radius: 1.25rem;
-  --background: oklch(0.973 0.01 91);
-  --foreground: oklch(0.305 0.045 179);
+  --background: oklch(0.972755 0.009502 93.567854);
+  --foreground: oklch(0.301259 0.041907 180.364759);
   --card: oklch(1 0 0);
   --card-foreground: var(--foreground);
   --popover: var(--card);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.423 0.077 175);
-  --deep: oklch(0.346 0.061 176);
-  --emerald: oklch(0.531 0.114 162);
+  --primary: oklch(0.423679 0.080301 174.411424);
+  --deep: oklch(0.345436 0.064584 175.995507);
+  --emerald: oklch(0.529242 0.109832 164.666192);
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.935 0.018 167);
   --secondary-foreground: var(--primary);
   --muted: oklch(0.942 0.008 91);
-  --muted-foreground: oklch(0.546 0.022 170);
-  --accent: oklch(0.814 0.158 84);
+  --muted-foreground: oklch(0.547619 0.020557 174.735556);
+  --accent: oklch(0.818901 0.162510 83.966829);
   --accent-foreground: var(--deep);
   --destructive: oklch(0.577 0.2 27);
   --destructive-foreground: oklch(0.98 0 0);
@@ -195,6 +195,10 @@
 @media (max-width: 640px) {
   .page-shell { padding: 24px 18px; }
   .premium-card { border-radius: 22px; }
+  .featured-photo { height: 335px; }
+  .featured-panel { padding: 14px; gap: 10px; }
+  .featured-panel h2 { font-size: 20px; }
+  .featured-panel .featured-copy { margin-top: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
