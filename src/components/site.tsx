@@ -44,20 +44,21 @@ export function Header() {
       </div>
       <p className="mt-3 text-[10px] font-medium text-primary-foreground/70 sm:hidden">Local Businesses • Real People • Big Opportunities</p>
       {menu && <nav className="photo-glass absolute right-5 top-20 z-40 flex min-w-48 flex-col rounded-2xl p-2" onClick={() => setMenu(false)}><Link to="/" className={cls}>Feed</Link><Link to="/results" className={cls}>Results</Link><Link to="/pricing" className={cls}>Plans</Link><AuthLink cls={cls} /></nav>}
-      <div className="mt-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_230px] sm:gap-5">
+      <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_230px] sm:gap-5">
         <form className="glass-search flex min-w-0 items-center gap-3 rounded-2xl border border-primary-foreground/40 p-1.5 pl-4 text-foreground" onSubmit={(e) => { e.preventDefault(); if (pathname !== "/") navigate({ to: "/" }); }}>
           <Search className="h-5 w-5 shrink-0 text-primary" /><input aria-label="Search businesses" value={search} onChange={(e) => { setSearch(e.target.value); if (pathname !== "/") navigate({ to: "/" }); }} placeholder="Search for restaurants, shops, services..." className="h-10 w-full min-w-0 bg-transparent text-xs outline-none sm:text-sm" />
           <Button variant="gold" size="icon" type="submit" aria-label="Search"><Search /></Button>
         </form>
-        <label className="flex min-w-0 items-center gap-3 rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-2.5"><MapPin className="h-5 w-5 shrink-0 text-accent" /><div className="min-w-0 flex-1"><span className="block text-[10px] text-primary-foreground/60">Your neighborhood</span><select aria-label="Location" value={zone} onChange={(e) => { setZone(e.target.value); if (pathname !== "/") navigate({ to: "/" }); }} className="w-full appearance-none bg-transparent text-sm font-bold outline-none">{ZONES.map((z) => <option className="bg-card text-foreground" key={z} value={z}>{z === "All zones" ? "Georgetown" : z}</option>)}</select></div><ChevronDown className="h-4 w-4 shrink-0" /></label>
+        <label className="flex min-w-0 items-center gap-3 rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-2 sm:py-2.5"><MapPin className="h-4 w-4 shrink-0 text-accent" /><div className="min-w-0 flex-1"><span className="hidden text-[10px] text-primary-foreground/60 sm:block">Your neighborhood</span><select aria-label="Location" value={zone} onChange={(e) => { setZone(e.target.value); if (pathname !== "/") navigate({ to: "/" }); }} className="w-full appearance-none bg-transparent text-xs font-bold outline-none sm:text-sm">{ZONES.map((z) => <option className="bg-card text-foreground" key={z} value={z}>{z === "All zones" ? "Georgetown" : z}</option>)}</select></div><ChevronDown className="h-4 w-4 shrink-0" /></label>
       </div>
     </div>
   </header>;
 }
 
-export function OpenBadge({ b, compact = false }: { b: Business; compact?: boolean }) {
+export function OpenBadge({ b, compact = false, dot = false }: { b: Business; compact?: boolean; dot?: boolean }) {
   const [s, setS] = useState<{ open: boolean; label: string } | null>(null);
   useEffect(() => { const u = () => setS(openStatus(b.hours)); u(); const i = setInterval(u, 60000); return () => clearInterval(i); }, [b]);
+  if (dot) return s?.open ? <span aria-label="Open now" title="Open now" className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-card bg-emerald" /> : null;
   if (!s) return <span className="text-xs text-muted-foreground">Checking hours…</span>;
   return <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold ${s.open ? "text-emerald" : "text-muted-foreground"}`}><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${s.open ? "bg-emerald" : "bg-muted-foreground"}`} />{compact ? s.open ? "Open now" : "Closed now" : s.label}</span>;
 }
