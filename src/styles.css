@@ -248,3 +248,14 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+.botanical-canopy { opacity: 0.72; }
+@media (max-width: 640px) {
+  .page-shell.reference-feed { padding: 0 12px 24px; }
+  .botanical-header > div { padding-top: 28px; padding-bottom: 10px; }
+  .botanical-header .brand-title { font-size: 20px; }
+  .botanical-header form { gap: 8px; }
+  .reference-featured .featured-photo { height: 350px; }
+  .reference-stories > div:first-child { margin-bottom: 6px; }
+  .reference-stories .story-control { width: 82px; }
+  .reference-stories .story-control img { width: 70px; height: 70px; }
+}
