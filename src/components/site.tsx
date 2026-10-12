@@ -35,7 +35,7 @@ export function Header() {
     <div className="relative mx-auto max-w-[1120px] px-4 pb-4 pt-10 sm:px-6 sm:pt-14">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <Link to="/" onClick={() => setPanel(null)} className="flex min-w-0 items-center gap-3">
-          <img src="/favicon.svg" alt="" width={64} height={80} className="h-14 w-11 shrink-0 sm:h-16 sm:w-12" />
+          <img src="/favicon.svg" alt="" width={64} height={80} className="brand-logo h-14 w-11 shrink-0 sm:h-16 sm:w-12" />
           <div className="min-w-0"><span className="brand-title block text-xl font-extrabold sm:text-3xl">Guyana <span className="text-accent">Ad</span> Local</span><span className="mt-1 hidden text-[11px] font-semibold text-primary-foreground/90 sm:block">Local Businesses • Real People • Big Opportunities</span></div>
         </Link>
         <div className="flex shrink-0 items-center gap-1 sm:gap-3">
@@ -45,8 +45,8 @@ export function Header() {
         </div>
       </div>
       <p className="mt-2 text-[10px] font-semibold text-primary-foreground/90 sm:hidden">Local Businesses • Real People • Big Opportunities</p>
-      {menu && <nav className="photo-glass absolute right-5 top-20 z-40 flex min-w-48 flex-col rounded-2xl p-2" onClick={() => setMenu(false)}><Link to="/" className={cls}>Feed</Link><Link to="/results" className={cls}>Results</Link><Link to="/pricing" className={cls}>Plans</Link><AuthLink cls={cls} /></nav>}
-      <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_230px] sm:gap-5">
+      {menu && <nav className="photo-glass header-menu absolute right-5 top-20 z-40 flex min-w-48 flex-col rounded-2xl p-2" onClick={() => setMenu(false)}><Link to="/" className={cls}>Feed</Link><Link to="/results" className={cls}>Results</Link><Link to="/pricing" className={cls}>Plans</Link><AuthLink cls={cls} /></nav>}
+      <div className="header-search-row mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_230px] sm:gap-5">
         <form className="glass-search reference-search flex min-w-0 items-center gap-3 rounded-full border border-primary-foreground/40 p-1.5 pl-4 text-primary-foreground" onSubmit={(e) => { e.preventDefault(); if (pathname !== "/") navigate({ to: "/" }); }}>
           <Search className="h-6 w-6 shrink-0" /><input aria-label="Search businesses" value={search} onChange={(e) => { setSearch(e.target.value); if (pathname !== "/") navigate({ to: "/" }); }} placeholder="Search for restaurants, shops, services..." className="h-10 w-full min-w-0 bg-transparent text-xs outline-none placeholder:text-primary-foreground/85 sm:text-sm" />
           <Button variant="gold" size="icon" type="submit" className="rounded-full" aria-label="Search"><Search /></Button>
@@ -82,10 +82,10 @@ export function CTAs({ b }: { b: Business }) {
 export function BottomNavigation() {
   const { panel, setPanel } = useMarketplace();
   const path = useRouterState({ select: (state) => state.location.pathname });
-  return <nav aria-label="Bottom navigation" className="bottom-dock fixed inset-x-2 bottom-2 z-40 mx-auto grid max-w-[620px] grid-cols-5 gap-1 rounded-[28px] border border-primary-foreground/20 p-2 pb-[max(8px,env(safe-area-inset-bottom))] text-primary-foreground">
-    <Button asChild variant="ghost" className={`h-14 flex-col gap-1 rounded-2xl text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path === "/" && !panel ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><Link to="/" onClick={() => setPanel(null)}><Home />Home</Link></Button>
-    {([{ key: "map", label: "Map", icon: MapPin }, { key: "saved", label: "Saved", icon: Heart }, { key: "notifications", label: "Notifications", icon: Bell }] as const).map((item) => <Button key={item.key} variant="ghost" onClick={() => setPanel(item.key)} className={`h-14 flex-col gap-1 rounded-2xl text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${panel === item.key ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><item.icon />{item.label}</Button>)}
-    <Button asChild variant="ghost" className={`h-14 flex-col gap-1 rounded-2xl text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path.includes("login") || path.includes("admin") ? "text-accent" : "text-primary-foreground/70"}`}><Link to="/login" onClick={() => setPanel(null)}><UserRound />Profile</Link></Button>
+  return <nav aria-label="Bottom navigation" className="bottom-dock fixed inset-x-2 bottom-2 z-40 mx-auto grid max-w-[620px] grid-cols-5 gap-1 rounded-[24px] border border-primary-foreground/20 p-2 pb-[max(8px,env(safe-area-inset-bottom))] text-primary-foreground">
+    <Button asChild variant="ghost" className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path === "/" && !panel ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><Link to="/" onClick={() => setPanel(null)}><Home />Home</Link></Button>
+    {([{ key: "map", label: "Map", icon: MapPin }, { key: "saved", label: "Saved", icon: Heart }, { key: "notifications", label: "Notifications", icon: Bell }] as const).map((item) => <Button key={item.key} variant="ghost" onClick={() => setPanel(item.key)} className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${panel === item.key ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><item.icon />{item.label}</Button>)}
+    <Button asChild variant="ghost" className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path.includes("login") || path.includes("admin") ? "text-accent" : "text-primary-foreground/70"}`}><Link to="/login" onClick={() => setPanel(null)}><UserRound />Profile</Link></Button>
   </nav>;
 }
 

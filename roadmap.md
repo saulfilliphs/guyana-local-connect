@@ -1,3 +1,8 @@
+# Mobile interface refinements
+- [x] Tighten header and discovery spacing; prioritize featured photography and readable overlays.
+- [x] Refine card text, shared floating navigation and consistent touch targets.
+- [x] Verify mobile/desktop layouts and existing discovery, saved, story and navigation interactions.
+
 # Reference-faithful visual adjustment
 - [x] Adjust green botanical header, large category icons, stories and photo overlays to the supplied reference.
 - [x] Preserve all existing data, actions and shared navigation.
