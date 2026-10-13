@@ -183,7 +183,8 @@
 .glass-search { background: color-mix(in oklab, var(--card) 96%, transparent); box-shadow: var(--elevated-shadow); backdrop-filter: blur(16px); }
 .photo-shade { background: var(--photo-shade); }
 .photo-glass { background: var(--glass-photo); border: 1px solid color-mix(in oklab, var(--primary-foreground) 25%, transparent); backdrop-filter: blur(16px); }
-.bottom-dock { background: color-mix(in oklab, var(--deep) 95%, transparent); box-shadow: var(--elevated-shadow); backdrop-filter: blur(20px); }
+.bottom-dock { background: color-mix(in oklab, var(--deep) 95%, transparent); box-shadow: var(--elevated-shadow); backdrop-filter: blur(20px); transition: transform 0.3s ease, opacity 0.3s ease; }
+.bottom-dock.nav-hidden { transform: translateY(150%); opacity: 0; pointer-events: none; }
 .premium-card { border: 1px solid var(--border); border-radius: 24px; background: var(--card); box-shadow: var(--soft-shadow); transition: transform 180ms ease, box-shadow 180ms ease; }
 .premium-card:hover { transform: translateY(-3px); box-shadow: var(--elevated-shadow); }
 .scroll-row { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; scroll-behavior: smooth; scroll-snap-type: x proximity; }
