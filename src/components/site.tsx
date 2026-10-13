@@ -81,11 +81,28 @@ export function CTAs({ b }: { b: Business }) {
 
 export function BottomNavigation() {
   const { panel, setPanel } = useMarketplace();
+  const [navHidden, setNavHidden] = useState(false);
   const path = useRouterState({ select: (state) => state.location.pathname });
-  return <nav aria-label="Bottom navigation" className="bottom-dock fixed inset-x-2 bottom-2 z-40 mx-auto grid max-w-[620px] grid-cols-5 gap-1 rounded-[24px] border border-primary-foreground/20 p-2 pb-[max(8px,env(safe-area-inset-bottom))] text-primary-foreground">
-    <Button asChild variant="ghost" className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path === "/" && !panel ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><Link to="/" onClick={() => setPanel(null)}><Home />Home</Link></Button>
-    {([{ key: "map", label: "Map", icon: MapPin }, { key: "saved", label: "Saved", icon: Heart }, { key: "notifications", label: "Notifications", icon: Bell }] as const).map((item) => <Button key={item.key} variant="ghost" onClick={() => setPanel(item.key)} className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${panel === item.key ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><item.icon />{item.label}</Button>)}
-    <Button asChild variant="ghost" className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path.includes("login") || path.includes("admin") ? "text-accent" : "text-primary-foreground/70"}`}><Link to="/login" onClick={() => setPanel(null)}><UserRound />Profile</Link></Button>
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let idle: ReturnType<typeof setTimeout> | undefined;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const dy = y - lastY;
+      lastY = y;
+      if (idle) clearTimeout(idle);
+      if (dy > 0 && y > 60) setNavHidden(true);
+      else if (dy < 0) setNavHidden(false);
+      idle = setTimeout(() => setNavHidden(false), 500);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { window.removeEventListener("scroll", onScroll); if (idle) clearTimeout(idle); };
+  }, []);
+  const showNav = () => setNavHidden(false);
+  return <nav aria-label="Bottom navigation" className={`bottom-dock ${navHidden ? "nav-hidden" : ""} fixed inset-x-2 bottom-2 z-40 mx-auto grid max-w-[620px] grid-cols-5 gap-1 rounded-[24px] border border-primary-foreground/20 p-2 pb-[max(8px,env(safe-area-inset-bottom))] text-primary-foreground`}>
+    <Button asChild variant="ghost" onClick={showNav} className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path === "/" && !panel ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><Link to="/" onClick={() => setPanel(null)}><Home />Home</Link></Button>
+    {([{ key: "map", label: "Map", icon: MapPin }, { key: "saved", label: "Saved", icon: Heart }, { key: "notifications", label: "Notifications", icon: Bell }] as const).map((item) => <Button key={item.key} variant="ghost" onClick={showNav} className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${panel === item.key ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><item.icon />{item.label}</Button>)}
+    <Button asChild variant="ghost" onClick={showNav} className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path.includes("login") || path.includes("admin") ? "text-accent" : "text-primary-foreground/70"}`}><Link to="/login" onClick={() => setPanel(null)}><UserRound />Profile</Link></Button>
   </nav>;
 }
 
