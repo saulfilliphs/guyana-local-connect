@@ -272,12 +272,12 @@
   justify-content: center;
   align-items: center;
   gap: 18px;
-  background-color: #063E32;
+  background-color: #02372D;
   opacity: 1;
   transition: opacity 500ms ease;
 }
 #splash-screen.splash-hiding { opacity: 0; pointer-events: none; }
-#splash-screen .splash-logo { width: 150px; height: auto; animation: splash-logo-in 700ms ease both; }
+#splash-screen .splash-logo { width: 230px; height: auto; animation: splash-logo-in 700ms ease both; }
 #splash-screen .splash-title { color: #FFFFFF; font-size: 28px; font-weight: 800; margin: 0; animation: splash-text-in 700ms 200ms ease both; }
 #splash-screen .splash-title b { color: #F5C21B; }
 #splash-screen .splash-tagline { color: #FFFFFF; font-size: 13px; letter-spacing: 0.02em; margin: 0; animation: splash-text-in 700ms 350ms ease both; }
