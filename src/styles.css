@@ -261,3 +261,34 @@
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
 .botanical-canopy { opacity: 0.72; }
+
+/* Splash screen — scoped strictly to #splash-screen */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  background-color: #02372D;
+  opacity: 1;
+  transition: opacity 500ms ease;
+}
+#splash-screen.splash-hiding { opacity: 0; pointer-events: none; }
+#splash-screen .splash-logo { width: 230px; height: auto; animation: splash-logo-in 700ms ease both; }
+#splash-screen .splash-title { color: #FFFFFF; font-size: 28px; font-weight: 800; margin: 0; animation: splash-text-in 700ms 200ms ease both; }
+#splash-screen .splash-title b { color: #F5C21B; }
+#splash-screen .splash-tagline { color: #FFFFFF; font-size: 13px; letter-spacing: 0.02em; margin: 0; animation: splash-text-in 700ms 350ms ease both; }
+#splash-screen .splash-loader {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(245, 194, 27, 0.2);
+  border-top-color: #F5C21B;
+  border-radius: 50%;
+  animation: splash-spin 900ms linear infinite;
+}
+@keyframes splash-spin { to { transform: rotate(360deg); } }
+@keyframes splash-logo-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+@keyframes splash-text-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

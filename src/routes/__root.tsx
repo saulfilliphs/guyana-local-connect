@@ -8,12 +8,13 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header, BottomNavigation, MarketplacePanel } from "@/components/site";
 import { MarketplaceProvider } from "@/components/marketplace-context";
+import splashLogo from "@/assets/splash-logo.png.asset.json";
 
 function NotFoundComponent() {
   return (
@@ -118,9 +119,33 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [showSplash, setShowSplash] = useState(true);
+  const [splashFading, setSplashFading] = useState(false);
+
+  useEffect(() => {
+    if (!showSplash) return;
+    const fadeTimer = window.setTimeout(() => setSplashFading(true), 2500);
+    const removeTimer = window.setTimeout(() => setShowSplash(false), 3000);
+    return () => {
+      window.clearTimeout(fadeTimer);
+      window.clearTimeout(removeTimer);
+    };
+  }, [showSplash]);
 
   return (
     <QueryClientProvider client={queryClient}>
+      {showSplash && (
+        <div
+          id="splash-screen"
+          className={splashFading ? "splash-hiding" : undefined}
+          aria-hidden={splashFading ? "true" : undefined}
+        >
+          <img src={splashLogo.url} alt="Guyana Ad Local" className="splash-logo" />
+          <h1 className="splash-title">Guyana <b>Ad</b> Local</h1>
+          <p className="splash-tagline">Local Businesses • Real People • Big Opportunities</p>
+          <div className="splash-loader" />
+        </div>
+      )}
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <MarketplaceProvider>
         <Header />
