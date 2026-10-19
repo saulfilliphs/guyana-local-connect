@@ -211,10 +211,11 @@
 .story-ring > span { width: 15px; height: 15px; border-color: var(--accent); }
 .reference-featured { border: 1px solid color-mix(in oklab, var(--accent) 65%, transparent); }
 .reference-featured .featured-photo { height: 420px; object-position: center; }
-.reference-featured .featured-panel { background: color-mix(in oklab, var(--deep) 82%, transparent); backdrop-filter: blur(10px); }
+.reference-featured .featured-panel { background: linear-gradient(to top, color-mix(in oklab, var(--deep) 85%, transparent) 0%, color-mix(in oklab, var(--deep) 40%, transparent) 70%, transparent 100%); backdrop-filter: blur(12px); border: none; padding: 14px; }
 .featured-open { background: color-mix(in oklab, var(--deep) 75%, transparent); }
 .featured-open > span { color: var(--primary-foreground); }
 .featured-cta { box-shadow: var(--gold-highlight-shadow); }
+@media (min-width: 640px) { .reference-featured .featured-panel { padding: 16px; } }
 .bottom-dock { background: color-mix(in oklab, var(--deep) 94%, transparent); }
 .bottom-dock svg { width: 22px; height: 22px; flex-shrink: 0; }
 .bottom-dock [data-slot="button"] { font-size: 10px; }
