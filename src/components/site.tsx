@@ -40,7 +40,6 @@ export function Header() {
         </Link>
         <div className="flex shrink-0 items-center gap-1 sm:gap-3">
           <nav className="hidden items-center gap-1 lg:flex"><Link to="/" className={cls} activeProps={{ className: "text-accent" }}>Explore</Link><Link to="/results" className={cls}>Results</Link><Link to="/pricing" className={cls}>Plans</Link><AuthLink cls={cls} /></nav>
-          <Button variant="ghost" size="icon" className="header-icon" aria-label="Notifications" title="Notifications" onClick={() => setPanel("notifications")}><Bell /></Button>
           <Button variant="ghost" size="icon" className="header-icon" aria-label="Menu" title="Menu" onClick={() => setMenu(!menu)}>{menu ? <X /> : <Menu />}</Button>
         </div>
       </div>
@@ -101,7 +100,7 @@ export function BottomNavigation() {
   const showNav = () => setNavHidden(false);
   return <nav aria-label="Bottom navigation" className={`bottom-dock ${navHidden ? "nav-hidden" : ""} fixed inset-x-2 bottom-2 z-40 mx-auto grid max-w-[620px] grid-cols-5 gap-1 rounded-[24px] border border-primary-foreground/20 p-2 pb-[max(8px,env(safe-area-inset-bottom))] text-primary-foreground`}>
     <Button asChild variant="ghost" onClick={showNav} className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path === "/" && !panel ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><Link to="/" onClick={() => setPanel(null)}><Home />Home</Link></Button>
-    {([{ key: "map", label: "Map", icon: MapPin }, { key: "saved", label: "Saved", icon: Heart }, { key: "notifications", label: "Notifications", icon: Bell }] as const).map((item) => <Button key={item.key} variant="ghost" onClick={showNav} className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${panel === item.key ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><item.icon />{item.label}</Button>)}
+    {([{ key: "map", label: "Map", icon: MapPin }, { key: "saved", label: "Saved", icon: Heart }, { key: "notifications", label: "Notifications", icon: Bell }] as const).map((item) => <Button key={item.key} variant="ghost" aria-current={panel === item.key ? "page" : undefined} onClick={() => { showNav(); setPanel(item.key); }} className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${panel === item.key ? "bg-primary-foreground/10 text-accent" : "text-primary-foreground/70"}`}><item.icon />{item.label}</Button>)}
     <Button asChild variant="ghost" onClick={showNav} className={`h-12 min-w-0 flex-col gap-1 rounded-2xl px-0 text-[10px] hover:bg-primary-foreground/10 hover:text-accent ${path.includes("login") || path.includes("admin") ? "text-accent" : "text-primary-foreground/70"}`}><Link to="/login" onClick={() => setPanel(null)}><UserRound />Profile</Link></Button>
   </nav>;
 }
