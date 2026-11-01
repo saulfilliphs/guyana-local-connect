@@ -14,3 +14,4 @@
 - Reuse shared Header, OpenBadge, CTAs and Button across marketplace pages; use global semantic design tokens so visual upgrades remain consistent without replacing business logic.
 - Keep botanical header imagery and reference-inspired category styling in the shared visual system; category selection remains in the existing feed so presentation changes do not alter business queries.
 - Ratings and sponsorship must never be inferred or fabricated; show unrated states until genuine review or sponsorship data exists.
+- Local Connect Assistant: model calls stay in the /api/chat server route; channel-agnostic prompt and business shaping live in src/lib/assistant.ts so a future WhatsApp webhook can reuse them; chat history is session-only (sessionStorage).
