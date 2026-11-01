@@ -13,6 +13,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header, BottomNavigation, MarketplacePanel } from "@/components/site";
+import { AssistantChat } from "@/components/assistant-chat";
 import { MarketplaceProvider } from "@/components/marketplace-context";
 import splashLogo from "@/assets/splash-logo.png.asset.json";
 
@@ -152,6 +153,7 @@ function RootComponent() {
         <Outlet />
         <BottomNavigation />
         <MarketplacePanel />
+        <AssistantChat />
       </MarketplaceProvider>
     </QueryClientProvider>
   );

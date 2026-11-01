@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as BusinessIdRouteImport } from './routes/business.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -46,6 +47,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BusinessIdRoute = BusinessIdRouteImport.update({
   id: '/business/$id',
   path: '/business/$id',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/results': typeof ResultsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/api/chat': typeof ApiChatRoute
   '/business/$id': typeof BusinessIdRoute
 }
 export interface FileRoutesByTo {
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/results': typeof ResultsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/api/chat': typeof ApiChatRoute
   '/business/$id': typeof BusinessIdRoute
 }
 export interface FileRoutesById {
@@ -76,14 +84,28 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/results': typeof ResultsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/api/chat': typeof ApiChatRoute
   '/business/$id': typeof BusinessIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/login' | '/pricing' | '/results' | '/admin' | '/business/$id'
+    | '/'
+    | '/login'
+    | '/pricing'
+    | '/results'
+    | '/admin'
+    | '/api/chat'
+    | '/business/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/pricing' | '/results' | '/admin' | '/business/$id'
+  to:
+    | '/'
+    | '/login'
+    | '/pricing'
+    | '/results'
+    | '/admin'
+    | '/api/chat'
+    | '/business/$id'
   id:
     | '__root__'
     | '/'
@@ -92,6 +114,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/results'
     | '/_authenticated/admin'
+    | '/api/chat'
     | '/business/$id'
   fileRoutesById: FileRoutesById
 }
@@ -101,6 +124,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   ResultsRoute: typeof ResultsRoute
+  ApiChatRoute: typeof ApiChatRoute
   BusinessIdRoute: typeof BusinessIdRoute
 }
 
@@ -148,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/business/$id': {
       id: '/business/$id'
       path: '/business/$id'
@@ -175,6 +206,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   ResultsRoute: ResultsRoute,
+  ApiChatRoute: ApiChatRoute,
   BusinessIdRoute: BusinessIdRoute,
 }
 export const routeTree = rootRouteImport
